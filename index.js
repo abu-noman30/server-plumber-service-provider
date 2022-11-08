@@ -36,7 +36,19 @@ const database = client.db('PlumBoyServiceReview');
 const serviceCollection = database.collection('Services');
 
 // Routes
+app.get('/home-services', async (req, res) => {
+	try {
+		const query = {};
+		const filter = serviceCollection.find(query);
 
+		// const allResult = await filter.toArray();
+		const result = await filter.limit(3).toArray();
+
+		res.send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
 // Test route
 app.get('/', (req, res) => {
 	res.send('Server is Running');
