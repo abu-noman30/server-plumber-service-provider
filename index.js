@@ -34,6 +34,7 @@ runDB();
 
 const database = client.db('PlumBoyServiceReview');
 const serviceCollection = database.collection('Services');
+const reviewCollection = database.collection('Reviews');
 
 // Routes
 app.get('/home-services', async (req, res) => {
@@ -66,15 +67,28 @@ app.get('/services/:id', async (req, res) => {
 		const serviceId = req.params.id;
 		const query = { _id: ObjectId(serviceId) };
 
-		const filter = serviceCollection.find(query);
-
-		const result = await filter.toArray();
+		const result = await serviceCollection.findOne(query);
 
 		res.status(200).send(result);
 	} catch (error) {
 		console.error(error);
 	}
 });
+
+app.post('/add-review', async (req, res) => {
+	try {
+		const UserRreview = req.body;
+		const doc = {
+			...UserRreview
+		};
+		const result = await reviewCollection.insertOne(doc);
+
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 // Test route
 app.get('/', (req, res) => {
 	res.send('Server is Running');
