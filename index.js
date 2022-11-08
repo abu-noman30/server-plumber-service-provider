@@ -44,7 +44,19 @@ app.get('/home-services', async (req, res) => {
 		// const allResult = await filter.toArray();
 		const result = await filter.limit(3).toArray();
 
-		res.send(result);
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
+app.get('/services', async (req, res) => {
+	try {
+		const query = {};
+		const filter = serviceCollection.find(query);
+
+		const result = await filter.toArray();
+
+		res.status(200).send(result);
 	} catch (error) {
 		console.error(error);
 	}
