@@ -128,6 +128,19 @@ app.get('/myreviews', async (req, res) => {
 	}
 });
 
+app.delete('/myreviews/:id', async (req, res) => {
+	try {
+		const reviewId = req.params.id;
+		const query = { _id: ObjectId(reviewId) };
+
+		const result = await reviewCollection.deleteOne(query);
+
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 // Test route
 app.get('/', (req, res) => {
 	res.send('Server is Running');
