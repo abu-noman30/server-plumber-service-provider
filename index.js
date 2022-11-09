@@ -122,6 +122,24 @@ app.post('/add-review', async (req, res) => {
 	}
 });
 
+app.get('/recent-service', async (req, res) => {
+	try {
+		const query = {};
+
+		const options = {
+			// sort returned documents in decending order by date (Recent->Previous)
+			sort: { dateTime: -1 }
+		};
+		const filter = serviceCollection.find(query, options);
+
+		const result = await filter.limit(1).toArray();
+
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 app.get('/reviews', async (req, res) => {
 	try {
 		const serviceId = req.headers.serviceid;
