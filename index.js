@@ -192,6 +192,30 @@ app.delete('/myreviews/:id', async (req, res) => {
 	}
 });
 
+app.patch('/myreviews/:id', async (req, res) => {
+	try {
+		const reviewId = req.params.id;
+		const reviewData = req.body;
+		console.log(reviewData);
+
+		const query = { _id: ObjectId(reviewId) };
+
+		const updateDoc = {
+			$set: {
+				'userInfo.title': reviewData.title,
+				'userInfo.message': reviewData.message,
+				dateTime: new Date().toLocaleString()
+			}
+		};
+
+		const result = await reviewCollection.updateOne(query, updateDoc);
+
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 // Test route
 app.get('/', (req, res) => {
 	res.send('Server is Running');
