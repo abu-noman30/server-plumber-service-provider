@@ -92,7 +92,7 @@ app.post('/add-review', async (req, res) => {
 app.get('/reviews', async (req, res) => {
 	try {
 		const serviceId = req.headers.serviceid;
-		console.log(serviceId);
+		// console.log(serviceId);
 		const query = {
 			'serviceInfo.id': { $eq: serviceId }
 		};
@@ -102,6 +102,23 @@ app.get('/reviews', async (req, res) => {
 			sort: { dateTime: -1 }
 		};
 		const filter = reviewCollection.find(query, options);
+
+		const result = await filter.toArray();
+
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+app.get('/myreviews', async (req, res) => {
+	try {
+		const userEmail = req.query.email;
+		const query = {
+			'userInfo.email': { $eq: userEmail }
+		};
+
+		const filter = reviewCollection.find(query);
 
 		const result = await filter.toArray();
 
