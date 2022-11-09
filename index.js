@@ -89,6 +89,28 @@ app.post('/add-review', async (req, res) => {
 	}
 });
 
+app.get('/reviews', async (req, res) => {
+	try {
+		const serviceId = req.headers.serviceid;
+		console.log(serviceId);
+		const query = {
+			'serviceInfo.id': { $eq: serviceId }
+		};
+
+		const options = {
+			// sort returned documents in decending order by date (Recent->Previous)
+			sort: { dateTime: -1 }
+		};
+		const filter = reviewCollection.find(query, options);
+
+		const result = await filter.toArray();
+
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 // Test route
 app.get('/', (req, res) => {
 	res.send('Server is Running');
