@@ -62,6 +62,39 @@ app.get('/services', async (req, res) => {
 		console.error(error);
 	}
 });
+
+app.post('/services', async (req, res) => {
+	try {
+		const serviceData = req.body;
+
+		const doc = {
+			name: serviceData.name,
+			description: serviceData.description,
+			img: serviceData.image,
+			payment: serviceData.payment,
+			totalPrice: serviceData.totalprice,
+			rating: serviceData.rating,
+			dateTime: serviceData.dateTime,
+			features: [
+				'7 Days Service Warranty',
+				'Doorstep service',
+				'Safety Assurance',
+				'24/7 Service'
+			],
+			pricing: [
+				'Only Service Charge',
+				'Visiting Charges is BDT 100 if no service is availed',
+				'Excludes all components and parts (if used)',
+				'Excludes Transportation cost (if applied)'
+			],
+			Warranty: '7 Days Service Warranty'
+		};
+		const result = await serviceCollection.insertOne(doc);
+		res.status(200).send(result);
+	} catch (error) {
+		console.error(error);
+	}
+});
 app.get('/services/:id', async (req, res) => {
 	try {
 		const serviceId = req.params.id;
