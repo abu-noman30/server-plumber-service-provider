@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
 const port = process.env.PORT || 5000;
 
@@ -10,6 +11,58 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Middleware(Authentication)-JWT(Token)
+// --------------------------------------
+app.post('/jwt', async (req, res) => {
+	try {
+		const authoriseUser = req.body;
+		// console.log(authoriseUser);
+		const token = jwt.sign(authoriseUser, process.env.ACCESS_TOKEN_SECRET_KEY, {
+			expiresIn: '1h'
+		});
+		// Send token as an object form
+		res.status(200).send({ accessToken: token });
+	} catch (error) {
+		res.send({
+			errorDetails: error.stack
+		});
+	}
+});
+
+// 2. verifyToken(Wraper function)
+function verifyToken(req, res, next) {
+	try {
+		const authBearerToken = req.headers.authorization;
+		// console.log(authBearerToken);
+
+		if (!authBearerToken) {
+			return res.status(401).send({
+				error: 'Unauthorise Access',
+				message: 'authBearerToken not found at verifyToken function'
+			});
+		}
+		// verifyToken
+		const token = authBearerToken.split(' ')[1];
+		// console.log(token);
+		jwt.verify(
+			token,
+			process.env.ACCESS_TOKEN_SECRET_KEY,
+			function (err, decoded) {
+				if (err) {
+					return res.status(403).send({
+						error: 'Forbidden Access',
+						message: 'Error found at matching token & ACCESS_TOKEN_SECRET_KEY'
+					});
+				}
+				req.decoded = decoded;
+				next();
+			}
+		);
+	} catch (error) {
+		res.send(error.stack);
+	}
+}
 
 // --------------------------
 // Database Connection Start
@@ -162,7 +215,7 @@ app.get('/reviews', async (req, res) => {
 	}
 });
 
-app.get('/myreviews', async (req, res) => {
+app.get('/myreviews', verifyToken, async (req, res) => {
 	try {
 		const userEmail = req.query.email;
 		const query = {
@@ -196,7 +249,7 @@ app.patch('/myreviews/:id', async (req, res) => {
 	try {
 		const reviewId = req.params.id;
 		const reviewData = req.body;
-		console.log(reviewData);
+		// console.log(reviewData);
 
 		const query = { _id: ObjectId(reviewId) };
 
