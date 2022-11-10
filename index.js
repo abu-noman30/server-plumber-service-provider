@@ -93,7 +93,12 @@ const reviewCollection = database.collection('Reviews');
 app.get('/home-services', async (req, res) => {
 	try {
 		const query = {};
-		const filter = serviceCollection.find(query);
+
+		const options = {
+			// sort returned documents in decending order by date (Recent->Previous)
+			sort: { dateTime: -1 }
+		};
+		const filter = serviceCollection.find(query, options);
 
 		// const allResult = await filter.toArray();
 		const result = await filter.limit(3).toArray();
@@ -106,7 +111,12 @@ app.get('/home-services', async (req, res) => {
 app.get('/services', async (req, res) => {
 	try {
 		const query = {};
-		const filter = serviceCollection.find(query);
+
+		const options = {
+			// sort returned documents in decending order by date (Recent->Previous)
+			sort: { dateTime: -1 }
+		};
+		const filter = serviceCollection.find(query, options);
 
 		const result = await filter.toArray();
 
